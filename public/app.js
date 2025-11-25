@@ -4,7 +4,6 @@ const qualityEl = document.getElementById("quality");
 const logEl = document.getElementById("log");
 const downloadBtn = document.getElementById("downloadBtn");
 
-// progress UI elements
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
 
@@ -20,7 +19,7 @@ function setLoadingQualities(isLoading) {
 
 async function fetchQualities(url) {
     setLoadingQualities(true);
-    logEl.textContent = "Fetching formats...\n";
+    if (logEl) logEl.textContent = ""; // keep empty (log disabled)
 
     try {
         const res = await fetch("/api/formats", {
@@ -31,7 +30,6 @@ async function fetchQualities(url) {
 
         const data = await res.json();
         if (!data.ok) {
-            logEl.textContent += (data.error || "Failed to load formats.") + "\n";
             setLoadingQualities(false);
             return;
         }
@@ -46,9 +44,6 @@ async function fetchQualities(url) {
             opt.value = f.id;
             opt.textContent = f.label;
 
-            // ✅ IMPORTANT:
-            // Only video formats include hasAudio from backend.
-            // Store it so download() can decide whether to merge audio.
             if (type !== "mp3") {
                 opt.dataset.hasAudio = f.hasAudio ? "1" : "0";
             }
@@ -62,10 +57,7 @@ async function fetchQualities(url) {
         } else {
             qualityEl.disabled = false;
         }
-
-        logEl.textContent += "Formats loaded.\n";
     } catch (e) {
-        logEl.textContent += "Failed to load formats.\n";
         setLoadingQualities(false);
     }
 }
@@ -78,19 +70,17 @@ function maybeAutoLoad() {
     fetchQualities(url);
 }
 
-// Auto-load on paste/typing (debounced)
 urlEl.addEventListener("input", () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(maybeAutoLoad, 600);
 });
 
-// If user switches MP3/MP4, reload qualities for current URL
 typeEl.addEventListener("change", () => {
     const url = urlEl.value.trim();
     if (url) fetchQualities(url);
 });
 
-/* ------------------------ DOWNLOAD PROGRESS ------------------------ */
+/* ------------------------ PROGRESS UI ------------------------ */
 
 function resetProgress() {
     if (progressBar) progressBar.style.width = "0%";
@@ -118,7 +108,6 @@ async function download() {
         return;
     }
 
-    // ✅ read hasAudio only for mp4 downloads
     let hasAudio = true;
     if (type !== "mp3" && !qualityEl.disabled) {
         const selectedOpt = qualityEl.options[qualityEl.selectedIndex];
@@ -127,10 +116,10 @@ async function download() {
 
     downloadBtn.disabled = true;
     resetProgress();
-    logEl.textContent = "Starting download...\n";
+
+    if (progressText) progressText.textContent = "Started downloading…";
 
     try {
-        // Start async download job
         const res = await fetch("/api/download", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -138,20 +127,13 @@ async function download() {
         });
 
         const data = await res.json();
-        if (!data.ok) {
-            logEl.textContent += (data.error || "Failed to start download.") + "\n";
+        if (!data.ok || !data.jobId) {
+            if (progressText) progressText.textContent = "Failed to start download.";
             downloadBtn.disabled = false;
             return;
         }
 
         const jobId = data.jobId;
-        if (!jobId) {
-            logEl.textContent += "No jobId returned from server.\n";
-            downloadBtn.disabled = false;
-            return;
-        }
-
-        // Subscribe to progress stream
         const ev = new EventSource(`/api/progress/${jobId}`);
 
         ev.onmessage = (msg) => {
@@ -161,32 +143,28 @@ async function download() {
                 setProgress(e.percent || 0, e.speed || "", e.eta || "");
             }
 
-            if (e.type === "log") {
-                logEl.textContent += e.line + "\n";
-                logEl.scrollTop = logEl.scrollHeight;
-            }
-
             if (e.type === "done") {
-                logEl.textContent += "\nDone!\n";
+                if (progressBar) progressBar.style.width = "100%";
+                if (progressText) progressText.textContent = "Complete ✅";
                 ev.close();
                 downloadBtn.disabled = false;
             }
 
             if (e.type === "error") {
-                logEl.textContent += "\nERROR: " + (e.message || "Download failed.") + "\n";
+                if (progressText) progressText.textContent = "Download failed.";
                 ev.close();
                 downloadBtn.disabled = false;
             }
         };
 
         ev.onerror = () => {
-            logEl.textContent += "\nLost connection to progress stream.\n";
+            if (progressText) progressText.textContent = "Lost connection.";
             ev.close();
             downloadBtn.disabled = false;
         };
 
     } catch (err) {
-        logEl.textContent += "\nERROR: " + err.message + "\n";
+        if (progressText) progressText.textContent = "Download error.";
         downloadBtn.disabled = false;
     }
 }

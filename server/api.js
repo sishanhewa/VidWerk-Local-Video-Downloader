@@ -35,17 +35,11 @@ function getBinaries() {
 
 function binariesExist(res, ytdlp, ffmpeg) {
     if (!fs.existsSync(ytdlp)) {
-        res.status(500).json({
-            ok: false,
-            error: "yt-dlp binary missing in bin/mac or bin/win."
-        });
+        res.status(500).json({ ok: false, error: "yt-dlp binary missing in bin/mac or bin/win." });
         return false;
     }
     if (!fs.existsSync(ffmpeg)) {
-        res.status(500).json({
-            ok: false,
-            error: "ffmpeg binary missing in bin/mac or bin/win."
-        });
+        res.status(500).json({ ok: false, error: "ffmpeg binary missing in bin/mac or bin/win." });
         return false;
     }
     return true;
@@ -83,7 +77,6 @@ function toMiB(bytes) {
     if (!bytes || bytes <= 0) return null;
     return (bytes / (1024 * 1024)).toFixed(1);
 }
-
 function safeNum(n) {
     return typeof n === "number" && !Number.isNaN(n) ? n : null;
 }
@@ -104,15 +97,19 @@ function normalizeHeight(h) {
     return best;
 }
 
-/* -------------------- FORMATS -------------------- */
 /**
- * - Return MP3 audio formats as-is.
- * - Return MP4/video formats standardized:
- *    * snap weird heights (1608/1072/804) to tiers (1440/1080/720)
- *    * keep ONE best option per tier
- *    * label like "1080p MP4 • 162.8 MiB"
- * - include `hasAudio` so download can decide merge vs keep-as-is.
+ * Estimate filesize if yt-dlp didn't provide it.
+ * size ≈ (tbr kbps * duration sec) / 8  -> bytes
  */
+function estimateBytesFromBitrateAndDuration(format, durationSec) {
+    const tbr = safeNum(format.tbr); // total bitrate kbps
+    if (!tbr || !durationSec) return 0;
+    const bytes = (tbr * 1000 * durationSec) / 8;
+    return bytes;
+}
+
+/* -------------------- FORMATS -------------------- */
+
 app.post("/api/formats", (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ ok: false, error: "Missing url" });
@@ -139,7 +136,9 @@ app.post("/api/formats", (req, res) => {
             return res.json({ ok: false, error: "Could not parse yt-dlp JSON output." });
         }
 
+        const durationSec = safeNum(info.duration) || 0;
         const formats = Array.isArray(info.formats) ? info.formats : [];
+
         const rawVideo = [];
         const audio = [];
 
@@ -152,7 +151,11 @@ app.post("/api/formats", (req, res) => {
             const hasVideo = f.vcodec && f.vcodec !== "none";
             const hasAudio = f.acodec && f.acodec !== "none";
 
-            const filesizeBytes = f.filesize || f.filesize_approx || 0;
+            // filesize or estimate
+            let filesizeBytes = f.filesize || f.filesize_approx || 0;
+            if (!filesizeBytes) {
+                filesizeBytes = estimateBytesFromBitrateAndDuration(f, durationSec);
+            }
             const sizeMiB = toMiB(filesizeBytes);
 
             // AUDIO ONLY
@@ -195,11 +198,6 @@ app.post("/api/formats", (req, res) => {
                 continue;
             }
 
-            // Scoring:
-            // 1) Prefer MP4 over WEBM
-            // 2) Prefer formats that already have audio
-            // 3) Prefer larger filesize (higher bitrate)
-            // 4) Prefer higher fps slightly
             const score = (x) => {
                 let s = 0;
                 if (x.ext === "MP4") s += 1000;
@@ -238,7 +236,7 @@ function newJob() {
     const id = crypto.randomBytes(8).toString("hex");
     jobs[id] = {
         status: "running",
-        log: [],
+        // log: [],  // 👈 log disabled
         progress: { percent: 0, speed: "", eta: "" },
         listeners: new Set()
     };
@@ -259,8 +257,7 @@ function closeListeners(jobId) {
     job.listeners.clear();
 }
 
-// Parse yt-dlp progress lines like:
-// [download]  36.5% of 52.11MiB at 2.31MiB/s ETA 00:14
+// Parse yt-dlp progress lines
 function parseProgress(line) {
     const m = line.match(/\[download\]\s+(\d{1,3}\.?\d*)%.*?at\s+([^\s]+).*?ETA\s+([0-9:]+)/i);
     if (!m) return null;
@@ -285,11 +282,7 @@ app.get("/api/progress/:jobId", (req, res) => {
 });
 
 /* -------------------- DOWNLOAD (ASYNC + PROGRESS) -------------------- */
-/**
- * Always ensure MP4 output has audio:
- * - if selected format already has audio -> download as-is
- * - if not -> merge with bestaudio and output mp4
- */
+
 app.post("/api/download", (req, res) => {
     const { url, format, type, hasAudio } = req.body;
     if (!url) return res.status(400).json({ ok: false, error: "Missing url" });
@@ -307,17 +300,17 @@ app.post("/api/download", (req, res) => {
         "--ffmpeg-location", ffmpeg,
         "--no-playlist",
         "--newline",
-        "-o", "%(title)s.%(ext)s"
+
+        // ✅ ALWAYS unique filename per run
+        "-o", "%(title)s-%(id)s-%(epoch)s.%(ext)s"
     ];
 
     if (type === "mp3") {
         args.push("-x", "--audio-format", "mp3", "--audio-quality", "0");
     } else if (format) {
         if (hasAudio) {
-            // already has audio, keep as-is
             args.push("-f", format);
         } else {
-            // video-only -> merge best audio
             args.push("-f", `${format}+bestaudio/best`);
             args.push("--merge-output-format", "mp4");
         }
@@ -328,21 +321,17 @@ app.post("/api/download", (req, res) => {
 
     proc.stdout.on("data", d => {
         for (const line of d.toString().split("\n").filter(Boolean)) {
-            job.log.push(line);
             const p = parseProgress(line);
             if (p) {
                 job.progress = p;
                 push(jobId, { type: "progress", ...p });
-            } else {
-                push(jobId, { type: "log", line });
             }
         }
     });
 
     proc.stderr.on("data", d => {
         const line = d.toString();
-        job.log.push(line);
-        push(jobId, { type: "log", line });
+        push(jobId, { type: "errorLine", line });
     });
 
     proc.on("close", code => {
@@ -357,8 +346,9 @@ app.post("/api/download", (req, res) => {
     });
 });
 
+
 /* -------------------- LISTEN -------------------- */
 
 app.listen(8787, "127.0.0.1", () => {
-    console.log("Server running at http://127.0.0.1:8787");
+    // console.log("Server running at http://127.0.0.1:8787"); // 👈 log commented
 });

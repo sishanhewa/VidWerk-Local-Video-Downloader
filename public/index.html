@@ -1,57 +1,75 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Local Video Downloader</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Video Downloader</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 <div class="container">
-  <header class="header">
-    <h1>YouTube Downloader</h1>
-    <p class="subtitle">Paste a link, pick MP4/MP3, choose quality, download.</p>
-  </header>
+    <header class="header">
+        <h1>✨ Local Video Downloader</h1>
+        <p class="subtitle">
+            Paste a link, choose MP4 or MP3, pick quality, and download.
+        </p>
+    </header>
 
-  <section class="card">
-    <label class="label">YouTube URL</label>
-    <input id="url" class="input" placeholder="https://www.youtube.com/watch?v=..." />
-    <div class="hint">Qualities load automatically after you paste a link.</div>
-  </section>
+    <!-- URL input -->
+    <section class="card">
+        <div class="input-group">
+            <label class="label" for="url">Video URL</label>
+            <input
+                    id="url"
+                    class="input"
+                    placeholder="https://www.youtube.com/watch?v=... or any supported site"
+                    autocomplete="off"
+            />
+            <div class="hint">
+                📌 Qualities load automatically after you paste a link.
+            </div>
+        </div>
+    </section>
 
-  <section class="card grid-2">
-    <div>
-      <label class="label">Type</label>
-      <select id="type" class="select">
-        <option value="mp4" selected>MP4 (Video)</option>
-        <option value="mp3">MP3 (Audio)</option>
-      </select>
-    </div>
+    <!-- Type + Quality -->
+    <section class="card">
+        <div class="grid-2">
+            <div class="input-group">
+                <label class="label" for="type">Format</label>
+                <select id="type" class="select">
+                    <option value="mp4" selected>🎬 MP4 (Video)</option>
+                    <option value="mp3">🎵 MP3 (Audio)</option>
+                </select>
+            </div>
 
-    <div>
-      <label class="label">Quality</label>
-      <select id="quality" class="select" disabled>
-        <option>Paste URL to load qualities…</option>
-      </select>
-    </div>
-  </section>
+            <div class="input-group">
+                <label class="label" for="quality">Quality</label>
+                <select id="quality" class="select" disabled>
+                    <option>⏳ Paste URL to load qualities…</option>
+                </select>
+            </div>
+        </div>
+    </section>
 
-  <section class="card">
-    <button id="downloadBtn" class="btn" onclick="download()">Download</button>
-    <div class="hint">Saved to your Downloads folder.</div>
-  </section>
+    <!-- Download button -->
+    <section class="card">
+        <button id="downloadBtn" class="btn" onclick="download()">
+            ⬇️ Download
+        </button>
+        <div class="hint">
+            💾 Saved to your Downloads folder automatically.
+        </div>
+    </section>
 
-  <section class="card">
-    <label class="label">Progress</label>
-    <div class="progressTrack">
-      <div id="progressBar" class="progressBar"></div>
-    </div>
-    <div id="progressText" class="hint"></div>
-  </section>
-
-  <section class="card">
-    <label class="label">Log</label>
-    <pre id="log" class="log"></pre>
-  </section>
+    <!-- Progress -->
+    <section class="card progress-section">
+        <label class="label">Download Progress</label>
+        <div class="progressTrack" aria-label="download progress">
+            <div id="progressBar" class="progressBar"></div>
+        </div>
+        <div id="progressText" class="hint"></div>
+    </section>
 </div>
 
 <script src="app.js"></script>
