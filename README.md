@@ -12,8 +12,8 @@ Powered by **yt-dlp + ffmpeg** and bundled inside the app, so end users don’t 
 
 ## ⬇️ Downloads
 
-- **macOS (.dmg)**: **[Download from Releases](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)**
-- **Windows (.exe)**: **Coming soon**
+- 🍎 **macOS (.dmg):** **[Download latest release](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)**
+- 🪟 **Windows (.exe):** **[Download latest release](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)**
 
 ---
 
@@ -52,6 +52,16 @@ Do one of these:
 3. Click **Open Anyway** next to Local Video Downloader
 
 ✅ After first launch, it opens normally.
+
+---
+
+## 🪟 Install (Windows)
+
+1. Download the latest **`.exe`** installer from Releases  
+2. Run the installer  
+3. Launch **Local Video Downloader** from the Start Menu
+
+> If Windows SmartScreen warns you, click **More info → Run anyway**.
 
 ---
 
@@ -186,5 +196,5 @@ Respect creators and platform terms.
 
 ## 🔮 Roadmap
 - ✅ macOS DMG installer
-- ⏳ Windows installer (coming soon)
+- ✅ Windows EXE installer
 - ⏳ Optional “simple mode” UI (progress-only)
