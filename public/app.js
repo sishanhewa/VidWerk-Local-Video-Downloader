@@ -1,14 +1,18 @@
 const urlEl = document.getElementById("url");
 const typeEl = document.getElementById("type");
 const qualityEl = document.getElementById("quality");
-const logEl = document.getElementById("log");
 const downloadBtn = document.getElementById("downloadBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const showBtn = document.getElementById("showBtn");
 
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
 
 let debounceTimer = null;
 let lastUrlLoaded = "";
+let currentJobId = null;
+let currentEventSource = null;
+let lastDownloadedFile = null;
 
 /* ------------------------ QUALITIES AUTO-LOAD ------------------------ */
 
@@ -19,7 +23,6 @@ function setLoadingQualities(isLoading) {
 
 async function fetchQualities(url) {
     setLoadingQualities(true);
-    if (logEl) logEl.textContent = ""; // keep empty (log disabled)
 
     try {
         const res = await fetch("/api/formats", {
@@ -38,7 +41,6 @@ async function fetchQualities(url) {
         const formats = type === "mp3" ? data.audio : data.video;
 
         qualityEl.innerHTML = "";
-
         for (const f of formats) {
             const opt = document.createElement("option");
             opt.value = f.id;
@@ -51,13 +53,8 @@ async function fetchQualities(url) {
             qualityEl.appendChild(opt);
         }
 
-        if (formats.length === 0) {
-            qualityEl.innerHTML = `<option>No formats found</option>`;
-            qualityEl.disabled = true;
-        } else {
-            qualityEl.disabled = false;
-        }
-    } catch (e) {
+        qualityEl.disabled = formats.length === 0;
+    } catch {
         setLoadingQualities(false);
     }
 }
@@ -96,6 +93,48 @@ function setProgress(pct, speed, eta) {
     }
 }
 
+/* ------------------------ CANCEL ------------------------ */
+
+async function cancelDownload() {
+    if (!currentJobId) return;
+
+    cancelBtn.disabled = true;
+    if (progressText) progressText.textContent = "Cancelling…";
+
+    try {
+        await fetch(`/api/cancel/${currentJobId}`, { method: "POST" });
+    } catch {}
+
+    if (currentEventSource) {
+        currentEventSource.close();
+        currentEventSource = null;
+    }
+
+    if (progressBar) progressBar.style.width = "0%";
+    if (progressText) progressText.textContent = "Cancelled ❌";
+
+    downloadBtn.disabled = false;
+    cancelBtn.style.display = "none";
+    if (showBtn) showBtn.style.display = "none";
+    currentJobId = null;
+}
+
+/* ------------------------ SHOW IN FOLDER ------------------------ */
+
+async function showInFolder() {
+    if (!lastDownloadedFile) return;
+
+    try {
+        await fetch("/api/reveal", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ filePath: lastDownloadedFile })
+        });
+    } catch {
+        alert("Could not open folder.");
+    }
+}
+
 /* ------------------------ DOWNLOAD ------------------------ */
 
 async function download() {
@@ -116,7 +155,8 @@ async function download() {
 
     downloadBtn.disabled = true;
     resetProgress();
-
+    lastDownloadedFile = null;
+    if (showBtn) showBtn.style.display = "none";
     if (progressText) progressText.textContent = "Started downloading…";
 
     try {
@@ -133,8 +173,13 @@ async function download() {
             return;
         }
 
-        const jobId = data.jobId;
-        const ev = new EventSource(`/api/progress/${jobId}`);
+        currentJobId = data.jobId;
+
+        cancelBtn.style.display = "inline-flex";
+        cancelBtn.disabled = false;
+
+        const ev = new EventSource(`/api/progress/${currentJobId}`);
+        currentEventSource = ev;
 
         ev.onmessage = (msg) => {
             const e = JSON.parse(msg.data);
@@ -146,25 +191,52 @@ async function download() {
             if (e.type === "done") {
                 if (progressBar) progressBar.style.width = "100%";
                 if (progressText) progressText.textContent = "Complete ✅";
+
+                lastDownloadedFile = e.filePath || null;
+                if (showBtn && lastDownloadedFile) {
+                    showBtn.style.display = "inline-flex";
+                }
+
                 ev.close();
+                currentEventSource = null;
+                cancelBtn.style.display = "none";
                 downloadBtn.disabled = false;
+                currentJobId = null;
+            }
+
+            if (e.type === "cancelled") {
+                if (progressBar) progressBar.style.width = "0%";
+                if (progressText) progressText.textContent = "Cancelled ❌";
+                ev.close();
+                currentEventSource = null;
+                cancelBtn.style.display = "none";
+                downloadBtn.disabled = false;
+                currentJobId = null;
             }
 
             if (e.type === "error") {
                 if (progressText) progressText.textContent = "Download failed.";
                 ev.close();
+                currentEventSource = null;
+                cancelBtn.style.display = "none";
                 downloadBtn.disabled = false;
+                currentJobId = null;
             }
         };
 
         ev.onerror = () => {
             if (progressText) progressText.textContent = "Lost connection.";
             ev.close();
+            currentEventSource = null;
+            cancelBtn.style.display = "none";
             downloadBtn.disabled = false;
+            currentJobId = null;
         };
 
-    } catch (err) {
+    } catch {
         if (progressText) progressText.textContent = "Download error.";
         downloadBtn.disabled = false;
+        cancelBtn.style.display = "none";
+        currentJobId = null;
     }
 }
