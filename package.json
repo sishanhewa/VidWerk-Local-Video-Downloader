@@ -2,10 +2,14 @@
   "name": "yt-downloader-electron",
   "version": "1.0.0",
   "description": "Electron yt-dlp downloader that opens browser UI",
+  "author": "sishanhewa",
   "main": "main.js",
   "scripts": {
     "dev": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:mac:arm": "electron-builder --mac dmg --arm64",
+    "dist:mac:intel": "electron-builder --mac dmg --x64",
+    "dist:win": "electron-builder --win nsis"
   },
   "devDependencies": {
     "electron": "^33.0.0",
@@ -16,11 +20,36 @@
   },
   "build": {
     "appId": "com.sonny.ytdownloader",
-    "productName": "YT Downloader",
-    "asar": false,
-    "files": ["**/*"],
-    "extraResources": [{ "from": "bin/", "to": "bin/" }],
-    "mac": { "target": ["dmg"] }
-  }
+    "productName": "Local Video Downloader",
+    "asar": true,
 
+    "files": [
+      "main.js",
+      "server/**",
+      "public/**",
+      "package.json"
+    ],
+
+    "mac": {
+      "target": ["dmg"],
+      "artifactName": "Local-Video-Downloader-${version}-${arch}.dmg",
+      "extraResources": [
+        { "from": "bin/mac", "to": "bin/mac" }
+      ]
+    },
+
+    "win": {
+      "target": ["nsis"],
+      "artifactName": "Local-Video-Downloader-Setup-${version}.exe",
+      "extraResources": [
+        { "from": "bin/win", "to": "bin/win" }
+      ]
+    },
+
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    }
+  }
 }
