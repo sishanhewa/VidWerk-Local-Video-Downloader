@@ -4,7 +4,7 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 const crypto = require("crypto");
-const { app: electronApp } = require("electron");
+const { app: electronApp, shell } = require("electron");
 
 const app = express();
 app.use(express.json());
@@ -35,11 +35,17 @@ function getBinaries() {
 
 function binariesExist(res, ytdlp, ffmpeg) {
     if (!fs.existsSync(ytdlp)) {
-        res.status(500).json({ ok: false, error: "yt-dlp binary missing in bin/mac or bin/win." });
+        res.status(500).json({
+            ok: false,
+            error: "yt-dlp binary missing in bin/mac or bin/win."
+        });
         return false;
     }
     if (!fs.existsSync(ffmpeg)) {
-        res.status(500).json({ ok: false, error: "ffmpeg binary missing in bin/mac or bin/win." });
+        res.status(500).json({
+            ok: false,
+            error: "ffmpeg binary missing in bin/mac or bin/win."
+        });
         return false;
     }
     return true;
@@ -81,7 +87,7 @@ function safeNum(n) {
     return typeof n === "number" && !Number.isNaN(n) ? n : null;
 }
 
-// standard tiers so UI shows normal values (720/1080/etc)
+// Standard tiers so UI shows normal values (720/1080/etc)
 const TIERS = [144, 240, 360, 480, 720, 1080, 1440, 2160, 4320];
 function normalizeHeight(h) {
     if (!h || h < 100) return 0;
@@ -102,10 +108,94 @@ function normalizeHeight(h) {
  * size ≈ (tbr kbps * duration sec) / 8  -> bytes
  */
 function estimateBytesFromBitrateAndDuration(format, durationSec) {
-    const tbr = safeNum(format.tbr); // total bitrate kbps
+    const tbr = safeNum(format.tbr);
     if (!tbr || !durationSec) return 0;
-    const bytes = (tbr * 1000 * durationSec) / 8;
-    return bytes;
+    return (tbr * 1000 * durationSec) / 8;
+}
+
+/**
+ * Kill yt-dlp AND any children (ffmpeg).
+ * - Windows: taskkill /T kills process tree
+ * - mac/linux: kill process group using negative PID
+ */
+function killProcessTree(proc) {
+    if (!proc || proc.killed) return;
+    const pid = proc.pid;
+    if (!pid) return;
+
+    if (process.platform === "win32") {
+        try {
+            spawn("taskkill", ["/PID", String(pid), "/T", "/F"]);
+        } catch {
+            try { proc.kill(); } catch {}
+        }
+    } else {
+        try {
+            process.kill(-pid, "SIGTERM");
+        } catch {
+            try { proc.kill("SIGTERM"); } catch {}
+        }
+
+        setTimeout(() => {
+            try { process.kill(-pid, "SIGKILL"); } catch {}
+        }, 1000);
+    }
+}
+
+/** Create per-job hidden temp download folder */
+function makeJobTempDir(jobId) {
+    const base =
+        process.platform === "win32"
+            ? path.join(os.tmpdir(), "local-video-downloader")
+            : path.join(os.homedir(), "Library", "Caches", "local-video-downloader");
+
+    fs.mkdirSync(base, { recursive: true });
+
+    const dir = path.join(base, `job-${jobId}`);
+    fs.mkdirSync(dir, { recursive: true });
+    return dir;
+}
+
+/** Delete temp dir safely */
+function cleanupTempDir(dir) {
+    if (!dir) return;
+    try {
+        fs.rmSync(dir, { recursive: true, force: true });
+    } catch {}
+}
+
+/** Move finished files from hidden temp -> Downloads */
+function moveFinishedToDownloads(tempDir, downloadsDir) {
+    if (!fs.existsSync(tempDir)) return [];
+
+    const files = fs.readdirSync(tempDir);
+
+    const finished = files.filter(f =>
+        !f.endsWith(".part") &&
+        !f.endsWith(".ytdl") &&
+        !f.endsWith(".tmp") &&
+        !f.endsWith(".webm.part") &&
+        !f.endsWith(".mp4.part")
+    );
+
+    const moved = [];
+    for (const file of finished) {
+        const src = path.join(tempDir, file);
+        const dest = path.join(downloadsDir, file);
+
+        try {
+            fs.renameSync(src, dest);
+            moved.push(dest);
+        } catch {
+            try {
+                fs.copyFileSync(src, dest);
+                fs.unlinkSync(src);
+                moved.push(dest);
+            } catch {}
+        }
+    }
+
+    return moved;
 }
 
 /* -------------------- FORMATS -------------------- */
@@ -151,14 +241,12 @@ app.post("/api/formats", (req, res) => {
             const hasVideo = f.vcodec && f.vcodec !== "none";
             const hasAudio = f.acodec && f.acodec !== "none";
 
-            // filesize or estimate
             let filesizeBytes = f.filesize || f.filesize_approx || 0;
             if (!filesizeBytes) {
                 filesizeBytes = estimateBytesFromBitrateAndDuration(f, durationSec);
             }
             const sizeMiB = toMiB(filesizeBytes);
 
-            // AUDIO ONLY
             if (isAudioOnly) {
                 const abr = safeNum(f.abr) ? `${Math.round(f.abr)} kbps` : "audio";
                 audio.push({
@@ -168,7 +256,6 @@ app.post("/api/formats", (req, res) => {
                 continue;
             }
 
-            // VIDEO (collect raw candidates)
             if (hasVideo) {
                 const heightRaw = safeNum(f.height) || 0;
                 const heightStd = normalizeHeight(heightRaw);
@@ -186,9 +273,8 @@ app.post("/api/formats", (req, res) => {
             }
         }
 
-        // ---------- STANDARDIZE: Pick best format per normalized resolution ----------
+        // Pick best format per tier
         const byTier = new Map();
-
         for (const v of rawVideo) {
             if (!v.heightStd) continue;
 
@@ -236,9 +322,11 @@ function newJob() {
     const id = crypto.randomBytes(8).toString("hex");
     jobs[id] = {
         status: "running",
-        // log: [],  // 👈 log disabled
         progress: { percent: 0, speed: "", eta: "" },
-        listeners: new Set()
+        listeners: new Set(),
+        proc: null,
+        cancelled: false,
+        tempDir: null
     };
     return id;
 }
@@ -257,7 +345,6 @@ function closeListeners(jobId) {
     job.listeners.clear();
 }
 
-// Parse yt-dlp progress lines
 function parseProgress(line) {
     const m = line.match(/\[download\]\s+(\d{1,3}\.?\d*)%.*?at\s+([^\s]+).*?ETA\s+([0-9:]+)/i);
     if (!m) return null;
@@ -281,27 +368,98 @@ app.get("/api/progress/:jobId", (req, res) => {
     req.on("close", () => job.listeners.delete(res));
 });
 
+/* -------------------- REVEAL IN FOLDER -------------------- */
+
+app.post("/api/reveal", (req, res) => {
+    const { filePath } = req.body;
+    if (!filePath) {
+        return res.status(400).json({ ok: false, error: "Missing filePath" });
+    }
+
+    try {
+        const folder = path.dirname(filePath);
+
+        if (process.platform === "win32") {
+            // ✅ Explorer: open and select + bring to front reliably
+            spawn("explorer.exe", ["/select,", filePath]);
+            return res.json({ ok: true });
+        }
+
+        if (process.platform === "darwin") {
+            // ✅ Finder: open folder first so it comes to front
+            shell.openPath(folder).then(() => {
+                // then highlight (small delay helps Finder focus)
+                setTimeout(() => {
+                    shell.showItemInFolder(filePath);
+                }, 250);
+            });
+
+            return res.json({ ok: true });
+        }
+
+        // ✅ Linux fallback: open folder, then try highlight
+        shell.openPath(folder).then(() => {
+            setTimeout(() => shell.showItemInFolder(filePath), 250);
+        });
+
+        return res.json({ ok: true });
+
+    } catch (e) {
+        return res.status(500).json({ ok: false, error: e.message });
+    }
+});
+
+
+/* -------------------- CANCEL DOWNLOAD -------------------- */
+
+app.post("/api/cancel/:jobId", (req, res) => {
+    const { jobId } = req.params;
+    const job = jobs[jobId];
+
+    if (!job) {
+        return res.status(404).json({ ok: false, error: "Job not found" });
+    }
+    if (job.status !== "running" || !job.proc) {
+        return res.json({ ok: false, error: "Job is not running" });
+    }
+
+    job.cancelled = true;
+
+    killProcessTree(job.proc);
+
+    job.status = "cancelled";
+    push(jobId, { type: "cancelled" });
+    closeListeners(jobId);
+
+    cleanupTempDir(job.tempDir);
+
+    res.json({ ok: true });
+});
+
 /* -------------------- DOWNLOAD (ASYNC + PROGRESS) -------------------- */
 
 app.post("/api/download", (req, res) => {
     const { url, format, type, hasAudio } = req.body;
     if (!url) return res.status(400).json({ ok: false, error: "Missing url" });
 
-    const outputDir = path.join(os.homedir(), "Downloads");
+    const downloadsDir = path.join(os.homedir(), "Downloads");
     const { ytdlp, ffmpeg } = getBinaries();
     if (!binariesExist(res, ytdlp, ffmpeg)) return;
 
     const jobId = newJob();
     res.json({ ok: true, jobId });
 
+    const job = jobs[jobId];
+    job.tempDir = makeJobTempDir(jobId);
+
     const args = [
         url,
-        "-P", outputDir,
+        "-P", job.tempDir,
         "--ffmpeg-location", ffmpeg,
         "--no-playlist",
         "--newline",
 
-        // ✅ ALWAYS unique filename per run
+        // always unique filename per run
         "-o", "%(title)s-%(id)s-%(epoch)s.%(ext)s"
     ];
 
@@ -316,8 +474,12 @@ app.post("/api/download", (req, res) => {
         }
     }
 
-    const proc = spawn(ytdlp, args, { env: getTempEnv() });
-    const job = jobs[jobId];
+    const proc = spawn(ytdlp, args, {
+        env: getTempEnv(),
+        detached: process.platform !== "win32"
+    });
+
+    job.proc = proc;
 
     proc.stdout.on("data", d => {
         for (const line of d.toString().split("\n").filter(Boolean)) {
@@ -335,10 +497,20 @@ app.post("/api/download", (req, res) => {
     });
 
     proc.on("close", code => {
+        if (job.cancelled) return;
+
         if (code === 0) {
+            const movedFiles = moveFinishedToDownloads(job.tempDir, downloadsDir);
+            cleanupTempDir(job.tempDir);
+
             job.status = "done";
-            push(jobId, { type: "done" });
+            push(jobId, {
+                type: "done",
+                filePath: movedFiles[0] || null
+            });
         } else {
+            cleanupTempDir(job.tempDir);
+
             job.status = "error";
             push(jobId, { type: "error", message: "Download failed." });
         }
@@ -346,9 +518,8 @@ app.post("/api/download", (req, res) => {
     });
 });
 
-
 /* -------------------- LISTEN -------------------- */
 
 app.listen(8787, "127.0.0.1", () => {
-    // console.log("Server running at http://127.0.0.1:8787"); // 👈 log commented
+    // console.log("Server running at http://127.0.0.1:8787");
 });
