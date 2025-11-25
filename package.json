@@ -21,31 +21,30 @@
   "build": {
     "appId": "com.sonny.ytdownloader",
     "productName": "Local Video Downloader",
-    "asar": true,
-
+    "asar": false,
     "files": [
-      "main.js",
-      "server/**",
-      "public/**",
-      "package.json"
+      "**/*"
     ],
-
+    "extraResources": [
+      {
+        "from": "bin/",
+        "to": "bin/"
+      }
+    ],
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "artifactName": "Local-Video-Downloader-${version}-${arch}.dmg",
-      "extraResources": [
-        { "from": "bin/mac", "to": "bin/mac" }
-      ]
+      "icon": "assets/icon.icns"
     },
-
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "artifactName": "Local-Video-Downloader-Setup-${version}.exe",
-      "extraResources": [
-        { "from": "bin/win", "to": "bin/win" }
-      ]
+      "icon": "assets/icon.ico"
     },
-
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,

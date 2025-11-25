@@ -239,4 +239,5 @@ async function download() {
         cancelBtn.style.display = "none";
         currentJobId = null;
     }
+
 }
