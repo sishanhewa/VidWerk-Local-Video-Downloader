@@ -8,10 +8,8 @@ Bundled with **yt-dlp + ffmpeg**, so end users don’t need to install Python, N
 
 ## ⬇️ Downloads
 
-- **macOS (.dmg)**: Download from **Releases**  
-  https://github.com/sishanhewa/Local-Video-Downloader/releases/latest
-- **Windows (.exe)**: coming soon
-
+- **macOS (.dmg):** [Download from Releases](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)
+- **Windows (.exe):** Coming soon
 > Go to the **Releases** section on the right side of this repo and grab the newest `.dmg`.
 
 ---
