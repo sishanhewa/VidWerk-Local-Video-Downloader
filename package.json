@@ -1,0 +1,26 @@
+{
+  "name": "yt-downloader-electron",
+  "version": "1.0.0",
+  "description": "Electron yt-dlp downloader that opens browser UI",
+  "main": "main.js",
+  "scripts": {
+    "dev": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "build": {
+    "appId": "com.sonny.ytdownloader",
+    "productName": "YT Downloader",
+    "asar": false,
+    "files": ["**/*"],
+    "extraResources": [{ "from": "bin/", "to": "bin/" }],
+    "mac": { "target": ["dmg"] }
+  }
+
+}

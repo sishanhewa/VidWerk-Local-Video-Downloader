@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>YouTube Downloader</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h1>YouTube Downloader</h1>
+    <p class="subtitle">Paste a link, pick MP4/MP3, choose quality, download.</p>
+  </header>
+
+  <section class="card">
+    <label class="label">YouTube URL</label>
+    <input id="url" class="input" placeholder="https://www.youtube.com/watch?v=..." />
+    <div class="hint">Qualities load automatically after you paste a link.</div>
+  </section>
+
+  <section class="card grid-2">
+    <div>
+      <label class="label">Type</label>
+      <select id="type" class="select">
+        <option value="mp4" selected>MP4 (Video)</option>
+        <option value="mp3">MP3 (Audio)</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="label">Quality</label>
+      <select id="quality" class="select" disabled>
+        <option>Paste URL to load qualities…</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="card">
+    <button id="downloadBtn" class="btn" onclick="download()">Download</button>
+    <div class="hint">Saved to your Downloads folder.</div>
+  </section>
+
+  <section class="card">
+    <label class="label">Progress</label>
+    <div class="progressTrack">
+      <div id="progressBar" class="progressBar"></div>
+    </div>
+    <div id="progressText" class="hint"></div>
+  </section>
+
+  <section class="card">
+    <label class="label">Log</label>
+    <pre id="log" class="log"></pre>
+  </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
