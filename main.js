@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, shell } = require("electron");
 const path = require("path");
 const http = require("http");
 
@@ -43,6 +43,25 @@ async function createMainWindow() {
 
     await waitForServer();
     mainWindow.loadURL(SERVER_URL);
+
+    // ✅ Open any external links in the user's default browser
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        const isLocal = url.startsWith(SERVER_URL);
+        if (!isLocal) {
+            shell.openExternal(url);
+            return { action: "deny" };
+        }
+        return { action: "allow" };
+    });
+
+    // ✅ Prevent navigation away from app; open external URLs in default browser
+    mainWindow.webContents.on("will-navigate", (event, url) => {
+        const isLocal = url.startsWith(SERVER_URL);
+        if (!isLocal) {
+            event.preventDefault();
+            shell.openExternal(url);
+        }
+    });
 
     mainWindow.once("ready-to-show", () => {
         mainWindow.show();
