@@ -13,6 +13,8 @@ Download videos or audio from YouTube,Facebook,Instagram,Tiktok and **1000+ supp
 
 ![Local Video Downloader UI](assets/screenshots/ui.png)
 
+![Local Video Downloader UI](assets/screenshots/ui2.png)
+
 ---
 
 ## ✅ Features
