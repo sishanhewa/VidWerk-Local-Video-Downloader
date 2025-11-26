@@ -57,13 +57,40 @@ body {
 }
 
 .header h1 {
-    font-size: 42px;
-    font-weight: 700;
-    letter-spacing: -1px;
     margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+/* Brand title stacked (VidWerk big, subtitle below) */
+.brand-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* keep centered in header */
+    gap: 4px;
+    margin: 0;
+    line-height: 1.05;
+}
+
+.brand-main {
+    font-size: 56px; /* BIG VidWerk */
+    font-weight: 800;
+    letter-spacing: -1.4px;
     background: linear-gradient(135deg, #818cf8 0%, #c4b5fd 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.brand-sub {
+    font-size: 18px; /* larger subtitle, still secondary */
+    font-weight: 650;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+    text-transform: none;
+}
+
+@media (max-width: 600px) {
+    .brand-main { font-size: 42px; }
+    .brand-sub { font-size: 16px; }
 }
 
 .header .subtitle {
@@ -403,7 +430,7 @@ body {
 @keyframes slideUpFooter { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
 @media (max-width: 600px) {
-    .header h1 { font-size: 32px; } .grid-2 { grid-template-columns: 1fr; } .footer-dock { padding: 0 20px; }
+    .grid-2 { grid-template-columns: 1fr; } .footer-dock { padding: 0 20px; }
     .brand-text { display: none; } .brand-indicator { display: block; }
     .url-row { flex-direction: column; }
     .url-row .btn { width: 100%; }

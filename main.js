@@ -1,4 +1,5 @@
 const { app, BrowserWindow, shell } = require("electron");
+app.setName("VidWerk");
 const path = require("path");
 const http = require("http");
 
@@ -32,7 +33,7 @@ async function createMainWindow() {
         minWidth: 900,
         minHeight: 600,
         show: false,
-        title: "Local Video Downloader",
+        title: "VidWerk",
         autoHideMenuBar: true,
         icon: path.join(__dirname, "assets", "icon.png"),
         webPreferences: {

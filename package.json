@@ -1,5 +1,5 @@
 {
-  "name": "local-video-downloader",
+  "name": "VidWerk",
   "version": "2.1.1",
   "description": "Local Video Downloader (yt-dlp + ffmpeg) for MP4/MP3 with live progress.",
   "author": "sishanhewa",
@@ -21,7 +21,7 @@
   },
   "build": {
     "appId": "com.sonny.localvideodownloader",
-    "productName": "Local Video Downloader",
+    "productName": "VidWerk",
 
     "asar": true,
     "asarUnpack": [
@@ -45,11 +45,11 @@
 
     "mac": {
       "target": ["dmg"],
-      "artifactName": "Local-Video-Downloader-${version}-${arch}.dmg",
+      "artifactName": "VidWerk-${version}-${arch}.dmg",
       "icon": "assets/icon.icns",
       "extendInfo": {
-        "CFBundleDisplayName": "Local Video Downloader",
-        "CFBundleName": "Local Video Downloader"
+        "CFBundleDisplayName": "VidWerk",
+        "CFBundleName": "VidWerk"
       }
     },
 
@@ -59,7 +59,7 @@
 
     "win": {
       "target": ["nsis"],
-      "artifactName": "Local-Video-Downloader-Setup-${version}.exe",
+      "artifactName": "VidWerk-Setup-${version}.exe",
       "icon": "assets/icon.ico"
     },
 

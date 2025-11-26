@@ -1,19 +1,19 @@
-# 🎥 Local Video Downloader
+# 🎥 VidWerk – Local Video Downloader
 
-![Local Video Downloader UI](assets/screenshots/poster.png)
+![VidWerk – Local Video Downloader UI](assets/screenshots/poster.png)
 
 ---
 
 A lightweight cross-platform desktop downloader built with **yt-dlp**.  
-Download videos or audio from YouTube,Facebook,Instagram,Tiktok and **1000+ supported sites** — with clean quality options, progress tracking, and audio-merged MP4 output.
+Download videos or audio from YouTube, Facebook, Instagram, TikTok and **1000+ supported sites** — with clean quality options, progress tracking, and audio‑merged MP4 output.
 
 ---
 
 ## 🖼️ Screenshot
 
-![Local Video Downloader UI](assets/screenshots/ui.png)
+![VidWerk – Local Video Downloader UI](assets/screenshots/ui.png)
 
-![Local Video Downloader UI](assets/screenshots/ui2.png)
+![VidWerk – Local Video Downloader UI](assets/screenshots/ui2.png)
 
 ---
 
@@ -39,11 +39,11 @@ Download the latest installers from the GitHub Releases page:
 ➡️ **[Download Latest Release](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)**
 
 ### macOS
-- **Apple Silicon (M1/M2/M3):** `Local-Video-Downloader-2.0.5-arm64.dmg`
-- **Intel Mac:** `Local-Video-Downloader-2.0.5-x64.dmg`
+- **Apple Silicon (M1/M2/M3):** `VidWerk-2.0.5-arm64.dmg`
+- **Intel Mac:** `VidWerk-2.0.5-x64.dmg`
 
 ### Windows
-- `Local-Video-Downloader-Setup-2.0.5.exe`
+- `VidWerk-Setup-2.0.5.exe`
 
 ---
 
@@ -131,7 +131,7 @@ dist/
 ## 📂 Folder Structure
 
 ```
-Local-Video-Downloader/
+VidWerk-Local-Video-Downloader/
 ├─ assets/              # icons (.png / .icns / .ico)
 ├─ bin/
 │  ├─ mac/              # yt-dlp + ffmpeg mac binaries
