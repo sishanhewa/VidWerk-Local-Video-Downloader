@@ -1,5 +1,9 @@
 # 🎥 Local Video Downloader
 
+![Local Video Downloader UI](assets/screenshots/poster.png)
+
+---
+
 A lightweight cross-platform desktop downloader built with **yt-dlp**.  
 Download videos or audio from YouTube,Facebook,Instagram,Tiktok and **1000+ supported sites** — with clean quality options, progress tracking, and audio-merged MP4 output.
 
