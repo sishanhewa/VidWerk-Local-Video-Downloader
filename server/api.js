@@ -4,6 +4,26 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 const crypto = require("crypto");
+
+// -------------------- FORMATS CACHE (speed-up) --------------------
+// Cache formats per-URL for a short time so repeated pastes load instantly.
+const formatCache = new Map();
+function getCachedFormats(url) {
+    const c = formatCache.get(url);
+    if (!c) return null;
+    if (Date.now() > c.expires) {
+        formatCache.delete(url);
+        return null;
+    }
+    return c.data;
+}
+function setCachedFormats(url, data) {
+    formatCache.set(url, {
+        expires: Date.now() + 10 * 60 * 1000, // 10 minutes
+        data
+    });
+}
+
 const { app: electronApp, shell } = require("electron");
 
 const app = express();
@@ -204,10 +224,15 @@ app.post("/api/formats", (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ ok: false, error: "Missing url" });
 
+    // ✅ return cached formats instantly if available
+    const cached = getCachedFormats(url);
+    if (cached) return res.json(cached);
+
     const { ytdlp, ffmpeg } = getBinaries();
     if (!binariesExist(res, ytdlp, ffmpeg)) return;
 
-    const proc = spawn(ytdlp, ["-J", "--no-playlist", url], { env: getTempEnv() });
+    // Faster than -J: single JSON line + no download
+    const proc = spawn(ytdlp, ["-j", "--skip-download", "--no-playlist", url], { env: getTempEnv() });
 
     let stdout = "";
     let stderr = "";
@@ -221,9 +246,20 @@ app.post("/api/formats", (req, res) => {
 
         let info;
         try {
-            info = JSON.parse(stdout);
+            info = JSON.parse(stdout.trim());
         } catch {
-            return res.json({ ok: false, error: "Could not parse yt-dlp JSON output." });
+            // Try to recover JSON if yt-dlp pollutes stdout
+            const start = stdout.indexOf("{");
+            const end = stdout.lastIndexOf("}");
+            if (start !== -1 && end !== -1 && end > start) {
+                try {
+                    info = JSON.parse(stdout.slice(start, end + 1));
+                } catch {
+                    return res.json({ ok: false, error: "Could not parse yt-dlp JSON output." });
+                }
+            } else {
+                return res.json({ ok: false, error: "Could not parse yt-dlp JSON output." });
+            }
         }
 
         const durationSec = safeNum(info.duration) || 0;
@@ -310,7 +346,9 @@ app.post("/api/formats", (req, res) => {
 
         audio.sort((a, b) => b.label.localeCompare(a.label));
 
-        res.json({ ok: true, video, audio });
+        const payload = { ok: true, video, audio };
+        setCachedFormats(url, payload);
+        res.json(payload);
     });
 });
 

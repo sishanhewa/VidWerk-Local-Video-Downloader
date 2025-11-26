@@ -5,6 +5,17 @@ Download videos or audio from YouTube and many other supported sites — with cl
 
 ---
 
+## 🖼️ Screenshot
+
+> Add a screenshot of the app UI here (recommended size: ~1200px wide).
+
+```html
+<!-- Replace the URL below with your uploaded screenshot -->
+<img src="https://user-images.githubusercontent.com/YOUR_ID/YOUR_SCREENSHOT.png" alt="Local Video Downloader UI" width="100%" />
+```
+
+---
+
 ## ✅ Features
 
 - **Desktop App UI (Electron)** — no browser required
@@ -50,11 +61,23 @@ If macOS blocks yt-dlp or ffmpeg:
 
 ---
 
-## 🪟 Windows First-Run Note
+## 🪟 Windows First-Run Note (SmartScreen)
 
-Windows SmartScreen may show a warning:
-1. Click **More info**
-2. Click **Run anyway**
+Because the app isn’t code‑signed yet, Windows SmartScreen may block it on first run. Here’s how to bypass safely:
+
+1. When the blue SmartScreen window appears, click **More info**.
+2. Click **Run anyway**.
+3. If Windows asks for permission (UAC prompt), click **Yes**.
+
+### If you downloaded from GitHub and still see a block
+Sometimes Windows marks files from the internet as “unsafe.” You can unblock it:
+
+1. Right‑click the installer `.exe` → **Properties**.
+2. At the bottom, check **Unblock**.
+3. Click **Apply** → **OK**.
+4. Run the installer again.
+
+> Tip: Downloading from the official GitHub **Releases** page reduces false warnings.
 
 ---
 
@@ -156,3 +179,4 @@ They are safe to delete manually — future versions will auto-clean them.
 ## ⭐ Support
 If you like this project, give it a star ⭐  
 Feature requests and PRs are welcome!
+    
