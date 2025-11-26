@@ -1,6 +1,6 @@
 {
   "name": "VidWerk",
-  "version": "2.1.1",
+  "version": "2.1.4",
   "description": "Local Video Downloader (yt-dlp + ffmpeg) for MP4/MP3 with live progress.",
   "author": "sishanhewa",
   "main": "main.js",
