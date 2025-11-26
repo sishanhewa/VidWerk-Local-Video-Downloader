@@ -30,14 +30,16 @@ Download videos or audio from YouTube and many other supported sites — with cl
 
 ## 📥 Download
 
-Go to **Releases** and download the correct installer:
+Download the latest installers from the GitHub Releases page:
+
+➡️ **[Download Latest Release](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)**
 
 ### macOS
-- **Apple Silicon (M1/M2/M3):** `Local-Video-Downloader-2.0.0-arm64.dmg`
-- **Intel Mac:** `Local-Video-Downloader-2.0.0-x64.dmg`
+- **Apple Silicon (M1/M2/M3):** `Local-Video-Downloader-2.0.5-arm64.dmg`
+- **Intel Mac:** `Local-Video-Downloader-2.0.5-x64.dmg`
 
 ### Windows
-- `Local-Video-Downloader-Setup-2.0.0.exe`
+- `Local-Video-Downloader-Setup-2.0.5.exe`
 
 ---
 
