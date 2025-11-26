@@ -1,6 +1,6 @@
 {
   "name": "local-video-downloader",
-  "version": "2.0.5",
+  "version": "2.1.0",
   "description": "Local Video Downloader (yt-dlp + ffmpeg) for MP4/MP3 with live progress.",
   "author": "sishanhewa",
   "main": "main.js",
