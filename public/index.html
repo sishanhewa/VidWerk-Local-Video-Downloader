@@ -3,133 +3,116 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Local Video Downloader</title>
+    <title>Video Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+
+<div class="background-glow"></div>
+
 <div class="container">
     <header class="header">
-        <h1>✨ Local Video Downloader</h1>
+        <h1>Local Video Downloader</h1>
         <p class="subtitle">
-            Paste a link, choose MP4 or MP3, pick quality, and download.
+            Securely extract media to your local device in high fidelity.
         </p>
     </header>
 
-    <!-- URL input -->
     <section class="card">
         <div class="input-group">
             <label class="label" for="url">Video URL</label>
             <input
                     id="url"
                     class="input"
-                    placeholder="https://www.youtube.com/watch?v=... or any supported site"
+                    placeholder="https://www.youtube.com/watch?v=..."
                     autocomplete="off"
             />
-            <div class="hint">
-                📌 Qualities load automatically after you paste a link.
-            </div>
+            <div class="hint">Qualities load automatically upon pasting a link.</div>
         </div>
     </section>
 
-    <!-- Type + Quality -->
     <section class="card">
         <div class="grid-2">
             <div class="input-group">
                 <label class="label" for="type">Format</label>
-                <select id="type" class="select">
-                    <option value="mp4" selected>🎬 MP4 (Video)</option>
-                    <option value="mp3">🎵 MP3 (Audio)</option>
-                </select>
+                <div class="select-wrapper">
+                    <select id="type" class="select">
+                        <option value="mp4" selected>MP4 Video</option>
+                        <option value="mp3">MP3 Audio</option>
+                    </select>
+                </div>
             </div>
 
             <div class="input-group">
                 <label class="label" for="quality">Quality</label>
-                <select id="quality" class="select" disabled>
-                    <option>⏳ Paste URL to load qualities…</option>
-                </select>
+                <div class="select-wrapper">
+                    <select id="quality" class="select" disabled>
+                        <option>Waiting for link...</option>
+                    </select>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Download button -->
     <section class="card">
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="downloadBtn" class="btn" onclick="download()">⬇️ Download</button>
+        <div class="action-wrapper">
+            <button id="downloadBtn" class="btn" onclick="download()">Download Media</button>
 
-        <button
-                id="cancelBtn"
-                class="btn btn-secondary"
-                onclick="cancelDownload()"
-                style="display:none;"
-        >
-            ✖ Cancel
-        </button>
+            <div class="secondary-actions">
+                <button
+                        id="cancelBtn"
+                        class="btn btn-secondary"
+                        onclick="cancelDownload()"
+                        style="display:none;"
+                >
+                    Cancel
+                </button>
 
-        <!-- ✅ appears after done -->
-        <button
-                id="showBtn"
-                class="btn btn-secondary"
-                onclick="showInFolder()"
-                style="display:none;"
-        >
-            📂 Show in Folder
-        </button>
-    </div>
-
-    <div class="hint">💾 Saved to your Downloads folder automatically.</div>
-</section>
-
-
-    <!-- Progress -->
-    <section class="card progress-section">
-        <label class="label">Download Progress</label>
-        <div class="progressTrack" aria-label="download progress">
-            <div id="progressBar" class="progressBar"></div>
+                <button
+                        id="showBtn"
+                        class="btn btn-secondary"
+                        onclick="showInFolder()"
+                        style="display:none;"
+                >
+                    Show in Folder
+                </button>
+            </div>
         </div>
-        <div id="progressText" class="hint"></div>
+
+        <div class="progress-section">
+            <div class="progress-info">
+                <span class="label" style="margin:0">Status</span>
+                <span id="progressText" class="status-text">Ready</span>
+            </div>
+            <div class="progressTrack" aria-label="download progress">
+                <div id="progressBar" class="progressBar"></div>
+            </div>
+        </div>
     </section>
-
-
 </div>
 
-<script src="app.js"></script>
-<!-- ADD THIS BEFORE </body> IN HTML -->
-<footer class="footer">
-    <div class="footer-left">
-        <span class="footer-made">Developed by</span>
-        <span class="footer-name">Sishan Hewapathirana</span>
+<footer class="footer-dock">
+    <div class="footer-brand">
+        <div class="brand-indicator"></div>
+        <span class="brand-text">Developed by <span class="brand-name">Sishan Hewapathirana</span></span>
     </div>
-    <div class="footer-links">
-        <a class="footer-link" href="https://github.com/sishanhewa" target="_blank" rel="noreferrer">
-      <span class="footer-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.1 3.3 9.43 7.88 10.96.58.1.79-.25.79-.56v-2.06c-3.2.7-3.88-1.54-3.88-1.54-.53-1.35-1.3-1.72-1.3-1.72-1.06-.73.08-.72.08-.72 1.17.09 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.1-.75.4-1.27.72-1.57-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.2-3.11-.12-.3-.52-1.5.11-3.11 0 0 .98-.31 3.2 1.19.93-.26 1.93-.39 2.93-.39s2 .13 2.93.39c2.22-1.5 3.2-1.19 3.2-1.19.63 1.61.23 2.81.11 3.11.75.81 1.2 1.85 1.2 3.11 0 4.43-2.7 5.4-5.28 5.69.41.36.78 1.07.78 2.16v3.2c0 .31.21.67.8.56 4.58-1.53 7.87-5.86 7.87-10.96C23.5 5.74 18.27.5 12 .5z"/>
-        </svg>
-      </span>
-            <span>GitHub</span>
+    <div class="footer-icons">
+        <a class="icon-link" href="https://github.com/sishanhewa" target="_blank" rel="noreferrer noopener" title="GitHub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
         </a>
-        <a class="footer-link" href="https://instagram.com/sishan.a" target="_blank" rel="noreferrer">
-      <span class="footer-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5z"/>
-          <path d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/>
-          <circle cx="17.2" cy="6.8" r="1.2"/>
-        </svg>
-      </span>
-            <span>Instagram</span>
+        <a class="icon-link" href="https://instagram.com/sishan.a" target="_blank" rel="noreferrer noopener" title="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
         </a>
-        <a class="footer-link" href="mailto:sishanhewapathirana@gmail.com">
-      <span class="footer-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.01L12 12l8-5.99V6H4zm16 12V8.24l-7.4 5.55a1 1 0 0 1-1.2 0L4 8.24V18h16z"/>
-        </svg>
-      </span>
-            <span>Email</span>
+        <a class="icon-link" href="mailto:sishanhewapathirana@gmail.com" target="_blank" rel="noreferrer noopener" title="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
         </a>
     </div>
 </footer>
 
-
+<script src="app.js"></script>
 </body>
 </html>
