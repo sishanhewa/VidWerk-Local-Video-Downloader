@@ -7,12 +7,9 @@ Download videos or audio from YouTube and many other supported sites — with cl
 
 ## 🖼️ Screenshot
 
-> Add a screenshot of the app UI here (recommended size: ~1200px wide).
+![Local Video Downloader UI](assets/screenshots/ui.png)
 
-```html
-<!-- Replace the URL below with your uploaded screenshot -->
-<img src="https://user-images.githubusercontent.com/YOUR_ID/YOUR_SCREENSHOT.png" alt="Local Video Downloader UI" width="100%" />
-```
+> Replace `ui.png` with your real screenshot filename if different.
 
 ---
 
@@ -179,4 +176,3 @@ They are safe to delete manually — future versions will auto-clean them.
 ## ⭐ Support
 If you like this project, give it a star ⭐  
 Feature requests and PRs are welcome!
-    
