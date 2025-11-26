@@ -1,6 +1,6 @@
 {
   "name": "Local-Video-Downloader",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Video downloader local",
   "author": "sishanhewa",
   "main": "main.js",
@@ -35,6 +35,13 @@
       "package.json"
     ],
 
+    "extraResources": [
+      {
+        "from": "bin/",
+        "to": "bin/"
+      }
+    ],
+
     "mac": {
       "target": ["dmg"],
       "artifactName": "Local-Video-Downloader-${version}-${arch}.dmg",
@@ -42,6 +49,10 @@
       "extraResources": [
         { "from": "bin/mac", "to": "bin/mac" }
       ]
+    },
+
+    "dmg": {
+      "writeUpdateInfo": false
     },
 
     "win": {
@@ -56,7 +67,16 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
-    }
+      "perMachine": false,
+
+      "differentialPackage": false
+    },
+
+    "publish": [
+      {
+        "provider": "github",
+        "publishAutoUpdate": false
+      }
+    ]
   }
 }
