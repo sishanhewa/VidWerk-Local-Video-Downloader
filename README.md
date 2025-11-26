@@ -9,8 +9,6 @@ Download videos or audio from YouTube,Facebook,Instagram,Tiktok and **1000+ supp
 
 ![Local Video Downloader UI](assets/screenshots/ui.png)
 
-> Replace `ui.png` with your real screenshot filename if different.
-
 ---
 
 ## ✅ Features
