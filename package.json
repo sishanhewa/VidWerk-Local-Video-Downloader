@@ -35,13 +35,6 @@
       "package.json"
     ],
 
-    "extraResources": [
-      {
-        "from": "bin/",
-        "to": "bin/"
-      }
-    ],
-
     "mac": {
       "target": ["dmg"],
       "artifactName": "Local-Video-Downloader-${version}-${arch}.dmg",
