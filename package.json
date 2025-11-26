@@ -1,9 +1,10 @@
 {
-  "name": "Local-Video-Downloader",
-  "version": "2.0.0",
-  "description": "Video downloader local",
+  "name": "local-video-downloader",
+  "version": "2.0.5",
+  "description": "Local Video Downloader (yt-dlp + ffmpeg) for MP4/MP3 with live progress.",
   "author": "sishanhewa",
   "main": "main.js",
+  "license": "MIT",
   "scripts": {
     "dev": "electron .",
     "dist": "electron-builder",
@@ -19,7 +20,7 @@
     "express": "^4.19.2"
   },
   "build": {
-    "appId": "com.sonny.ytdownloader",
+    "appId": "com.sonny.localvideodownloader",
     "productName": "Local Video Downloader",
 
     "asar": true,
@@ -35,28 +36,45 @@
       "package.json"
     ],
 
+    "extraResources": [
+      {
+        "from": "bin/",
+        "to": "bin/"
+      }
+    ],
+
     "mac": {
       "target": ["dmg"],
       "artifactName": "Local-Video-Downloader-${version}-${arch}.dmg",
       "icon": "assets/icon.icns",
-      "extraResources": [
-        { "from": "bin/mac", "to": "bin/mac" }
-      ]
+      "extendInfo": {
+        "CFBundleDisplayName": "Local Video Downloader",
+        "CFBundleName": "Local Video Downloader"
+      }
+    },
+
+    "dmg": {
+      "writeUpdateInfo": false
     },
 
     "win": {
       "target": ["nsis"],
       "artifactName": "Local-Video-Downloader-Setup-${version}.exe",
-      "icon": "assets/icon.ico",
-      "extraResources": [
-        { "from": "bin/win", "to": "bin/win" }
-      ]
+      "icon": "assets/icon.ico"
     },
 
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
-    }
+      "perMachine": false,
+      "differentialPackage": false
+    },
+
+    "publish": [
+      {
+        "provider": "github",
+        "publishAutoUpdate": false
+      }
+    ]
   }
 }

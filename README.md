@@ -1,7 +1,13 @@
 # 🎥 Local Video Downloader
 
-A lightweight cross-platform desktop downloader built with **Electron + yt-dlp**.  
-Download videos or audio from YouTube and many other supported sites — with clean quality options, progress tracking, and audio-merged MP4 output.
+A lightweight cross-platform desktop downloader built with **yt-dlp**.  
+Download videos or audio from YouTube,Facebook,Instagram,Tiktok and **1000+ supported sites** — with clean quality options, progress tracking, and audio-merged MP4 output.
+
+---
+
+## 🖼️ Screenshot
+
+![Local Video Downloader UI](assets/screenshots/ui.png)
 
 ---
 
@@ -22,14 +28,16 @@ Download videos or audio from YouTube and many other supported sites — with cl
 
 ## 📥 Download
 
-Go to **Releases** and download the correct installer:
+Download the latest installers from the GitHub Releases page:
+
+➡️ **[Download Latest Release](https://github.com/sishanhewa/Local-Video-Downloader/releases/latest)**
 
 ### macOS
-- **Apple Silicon (M1/M2/M3):** `Local-Video-Downloader-2.0.0-arm64.dmg`
-- **Intel Mac:** `Local-Video-Downloader-2.0.0-x64.dmg`
+- **Apple Silicon (M1/M2/M3):** `Local-Video-Downloader-2.0.5-arm64.dmg`
+- **Intel Mac:** `Local-Video-Downloader-2.0.5-x64.dmg`
 
 ### Windows
-- `Local-Video-Downloader-Setup-2.0.0.exe`
+- `Local-Video-Downloader-Setup-2.0.5.exe`
 
 ---
 
@@ -50,11 +58,23 @@ If macOS blocks yt-dlp or ffmpeg:
 
 ---
 
-## 🪟 Windows First-Run Note
+## 🪟 Windows First-Run Note (SmartScreen)
 
-Windows SmartScreen may show a warning:
-1. Click **More info**
-2. Click **Run anyway**
+Because the app isn’t code‑signed yet, Windows SmartScreen may block it on first run. Here’s how to bypass safely:
+
+1. When the blue SmartScreen window appears, click **More info**.
+2. Click **Run anyway**.
+3. If Windows asks for permission (UAC prompt), click **Yes**.
+
+### If you downloaded from GitHub and still see a block
+Sometimes Windows marks files from the internet as “unsafe.” You can unblock it:
+
+1. Right‑click the installer `.exe` → **Properties**.
+2. At the bottom, check **Unblock**.
+3. Click **Apply** → **OK**.
+4. Run the installer again.
+
+> Tip: Downloading from the official GitHub **Releases** page reduces false warnings.
 
 ---
 

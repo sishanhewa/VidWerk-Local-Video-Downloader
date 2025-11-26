@@ -3,133 +3,228 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Local Video Downloader</title>
+    <title>Video Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+
+<div class="background-glow"></div>
+
 <div class="container">
     <header class="header">
-        <h1>✨ Local Video Downloader</h1>
+        <h1>Local Video Downloader</h1>
         <p class="subtitle">
-            Paste a link, choose MP4 or MP3, pick quality, and download.
+            Securely extract media to your local device in high fidelity.
         </p>
+
+        <div class="supported-section">
+            <div class="support-pill">
+                <button class="support-trigger" onclick="openModal()">
+                    <span class="status-dot"></span>
+                    <span>Supports 1000+ Sites</span>
+                </button>
+
+                <div class="pill-divider"></div>
+
+                <div class="pill-icons">
+                    <div class="pill-icon" title="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+                    <div class="pill-icon" title="Instagram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></div>
+                    <div class="pill-icon" title="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.03 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.35-1.17.82-1.51 1.45-.48 1.05-.51 2.29-.16 3.4.52 1.66 2.14 2.77 3.86 2.62 1.5-.13 2.81-1.15 3.22-2.58.26-.9.23-1.85.18-2.79V.02z"/></svg></div>
+                    <div class="pill-icon" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+                </div>
+
+                <button class="pill-more" onclick="openModal()" title="View List">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </div>
+
     </header>
 
-    <!-- URL input -->
     <section class="card">
         <div class="input-group">
             <label class="label" for="url">Video URL</label>
-            <input
-                    id="url"
-                    class="input"
-                    placeholder="https://www.youtube.com/watch?v=... or any supported site"
-                    autocomplete="off"
-            />
-            <div class="hint">
-                📌 Qualities load automatically after you paste a link.
+
+            <div class="url-row">
+                <input id="url" class="input" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" />
+                <button id="pasteBtn"
+                        class="btn btn-secondary icon-btn"
+                        type="button"
+                        title="Paste from clipboard"
+                        aria-label="Paste">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                        <path d="M16 4h-1.18C14.4 2.84 13.3 2 12 2c-1.3 0-2.4.84-2.82 2H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-4-1c.55 0 1 .45 1 1h-2c0-.55.45-1 1-1zM8 6h8v14H8V6z"/>
+                    </svg>
+                </button>
             </div>
+
+            <div class="hint">Qualities load automatically upon pasting a link.</div>
         </div>
     </section>
 
-    <!-- Type + Quality -->
     <section class="card">
         <div class="grid-2">
             <div class="input-group">
                 <label class="label" for="type">Format</label>
-                <select id="type" class="select">
-                    <option value="mp4" selected>🎬 MP4 (Video)</option>
-                    <option value="mp3">🎵 MP3 (Audio)</option>
-                </select>
+                <div class="select-wrapper">
+                    <select id="type" class="select">
+                        <option value="mp4" selected>MP4 Video</option>
+                        <option value="mp3">MP3 Audio</option>
+                    </select>
+                </div>
             </div>
-
             <div class="input-group">
                 <label class="label" for="quality">Quality</label>
-                <select id="quality" class="select" disabled>
-                    <option>⏳ Paste URL to load qualities…</option>
-                </select>
+                <div class="quality-row">
+                    <div class="select-wrapper" style="flex:1;">
+                        <select id="quality" class="select" disabled>
+                            <option>Waiting for link...</option>
+                        </select>
+                    </div>
+                    <div id="qualitySpinner" class="spinner hidden" aria-label="Loading qualities"></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Download button -->
     <section class="card">
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="downloadBtn" class="btn" onclick="download()">⬇️ Download</button>
-
-        <button
-                id="cancelBtn"
-                class="btn btn-secondary"
-                onclick="cancelDownload()"
-                style="display:none;"
-        >
-            ✖ Cancel
-        </button>
-
-        <!-- ✅ appears after done -->
-        <button
-                id="showBtn"
-                class="btn btn-secondary"
-                onclick="showInFolder()"
-                style="display:none;"
-        >
-            📂 Show in Folder
-        </button>
-    </div>
-
-    <div class="hint">💾 Saved to your Downloads folder automatically.</div>
-</section>
-
-
-    <!-- Progress -->
-    <section class="card progress-section">
-        <label class="label">Download Progress</label>
-        <div class="progressTrack" aria-label="download progress">
-            <div id="progressBar" class="progressBar"></div>
+        <div class="action-wrapper">
+            <button id="downloadBtn" class="btn" onclick="download()">Download Media</button>
+            <div class="secondary-actions">
+                <button id="cancelBtn" class="btn btn-secondary" onclick="cancelDownload()" style="display:none;">Cancel</button>
+                <button id="showBtn" class="btn btn-secondary" onclick="showInFolder()" style="display:none;">Show in Folder</button>
+            </div>
         </div>
-        <div id="progressText" class="hint"></div>
+        <div class="progress-section">
+            <div class="progress-info">
+                <span class="label" style="margin:0">Status</span>
+                <span id="progressText" class="status-text">Ready</span>
+            </div>
+            <div class="progressTrack">
+                <div id="progressBar" class="progressBar"></div>
+            </div>
+        </div>
     </section>
-
-
 </div>
 
-<script src="app.js"></script>
-<!-- ADD THIS BEFORE </body> IN HTML -->
-<footer class="footer">
-    <div class="footer-left">
-        <span class="footer-made">Developed by</span>
-        <span class="footer-name">Sishan Hewapathirana</span>
+<div id="sitesModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Supported Platforms</h2>
+            <button class="modal-close" onclick="closeModal(event, true)">✕</button>
+        </div>
+        <div class="modal-search">
+            <input type="text" id="siteSearch" class="input" placeholder="Search sites (e.g. Vimeo, Twitch)..." onkeyup="filterSites()">
+        </div>
+        <div class="modal-body">
+            <ul id="sitesList" class="sites-list">
+                <li class="no-results" style="border:none;">Loading sites...</li>
+            </ul>
+        </div>
     </div>
-    <div class="footer-links">
-        <a class="footer-link" href="https://github.com/sishanhewa" target="_blank" rel="noreferrer">
-      <span class="footer-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.1 3.3 9.43 7.88 10.96.58.1.79-.25.79-.56v-2.06c-3.2.7-3.88-1.54-3.88-1.54-.53-1.35-1.3-1.72-1.3-1.72-1.06-.73.08-.72.08-.72 1.17.09 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.1-.75.4-1.27.72-1.57-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.2-3.11-.12-.3-.52-1.5.11-3.11 0 0 .98-.31 3.2 1.19.93-.26 1.93-.39 2.93-.39s2 .13 2.93.39c2.22-1.5 3.2-1.19 3.2-1.19.63 1.61.23 2.81.11 3.11.75.81 1.2 1.85 1.2 3.11 0 4.43-2.7 5.4-5.28 5.69.41.36.78 1.07.78 2.16v3.2c0 .31.21.67.8.56 4.58-1.53 7.87-5.86 7.87-10.96C23.5 5.74 18.27.5 12 .5z"/>
-        </svg>
-      </span>
-            <span>GitHub</span>
-        </a>
-        <a class="footer-link" href="https://instagram.com/sishan.a" target="_blank" rel="noreferrer">
-      <span class="footer-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5z"/>
-          <path d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/>
-          <circle cx="17.2" cy="6.8" r="1.2"/>
-        </svg>
-      </span>
-            <span>Instagram</span>
-        </a>
-        <a class="footer-link" href="mailto:sishanhewapathirana@gmail.com">
-      <span class="footer-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.01L12 12l8-5.99V6H4zm16 12V8.24l-7.4 5.55a1 1 0 0 1-1.2 0L4 8.24V18h16z"/>
-        </svg>
-      </span>
-            <span>Email</span>
-        </a>
+</div>
+
+<footer class="footer-dock">
+    <div class="footer-brand">
+        <div class="brand-indicator"></div>
+        <span class="brand-text">Developed by <span class="brand-name">Sishan Hewapathirana</span></span>
+    </div>
+    <div class="footer-icons">
+        <a class="icon-link" href="https://github.com/sishanhewa" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+        <a class="icon-link" href="https://instagram.com/sishan.a" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a class="icon-link" href="mailto:sishanhewapathirana@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a>
     </div>
 </footer>
 
+<script src="app.js"></script>
+
+<script>
+    let allSites = [];
+    let sitesLoaded = false;
+
+    // IMPORTANT: Place a file named 'sites.md' or 'sites.txt' in the same folder.
+    const SITES_FILE = 'sites.md';
+
+    async function loadSites() {
+        if (sitesLoaded) return;
+
+        const listEl = document.getElementById('sitesList');
+
+        try {
+            const response = await fetch(SITES_FILE);
+            if (!response.ok) throw new Error("File not found");
+            const text = await response.text();
+
+            allSites = text.split('\n')
+                .map(line => line.replace(/[*#\-]/g, '').trim())
+                .filter(line => line.length > 1);
+
+            sitesLoaded = true;
+            renderSites();
+
+        } catch (error) {
+            console.error("Error loading sites:", error);
+            listEl.innerHTML = `
+                <li class="no-results" style="color:#ef4444; border:none;">
+                    Could not load sites file.<br>
+                    <small>Please ensure <b>sites.md</b> exists in the folder.</small>
+                </li>`;
+        }
+    }
+
+    function renderSites(filterText = '') {
+        const listEl = document.getElementById('sitesList');
+        listEl.innerHTML = '';
+
+        const lowerFilter = filterText.toLowerCase();
+        const filtered = allSites.filter(site => site.toLowerCase().includes(lowerFilter));
+
+        if (filtered.length === 0) {
+            listEl.innerHTML = '<li class="no-results">No matches found</li>';
+            return;
+        }
+
+        const displayList = filterText ? filtered : filtered.slice(0, 100);
+
+        displayList.forEach(site => {
+            const li = document.createElement('li');
+            li.textContent = site;
+            listEl.appendChild(li);
+        });
+
+        if (!filterText && filtered.length > 100) {
+            const more = document.createElement('li');
+            more.textContent = `...and ${filtered.length - 100} more (use search)`;
+            more.style.color = 'var(--text-muted)';
+            more.style.fontStyle = 'italic';
+            listEl.appendChild(more);
+        }
+    }
+
+    function openModal() {
+        document.getElementById('sitesModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        loadSites();
+        setTimeout(() => document.getElementById('siteSearch').focus(), 100);
+    }
+
+    function closeModal(e, force = false) {
+        const modal = document.getElementById('sitesModal');
+        if (force || e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function filterSites() {
+        const input = document.getElementById('siteSearch');
+        renderSites(input.value);
+    }
+</script>
 
 </body>
 </html>
